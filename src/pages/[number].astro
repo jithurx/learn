@@ -1,0 +1,20 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs', (entry) => entry.id.startsWith('posts/'));
+  return docs
+    .filter((post) => post.data.number !== undefined)
+    .flatMap((post) => {
+      // Create the slug used by Starlight
+      const slug = post.slug || post.id.replace(/\/index\.mdx?$/, '').replace(/\.mdx?$/, '');
+      return [
+        { params: { number: String(post.data.number) }, props: { slug } },
+      ];
+    });
+}
+
+const { slug } = Astro.props;
+// Redirect to the Starlight page
+return Astro.redirect(`/${slug}`);
+---

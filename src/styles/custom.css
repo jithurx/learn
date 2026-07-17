@@ -1,0 +1,111 @@
+/* Gruvbox Custom CSS for Starlight */
+
+:root {
+  /* Gruvbox Dark (Default) */
+  --sl-color-white: #ebdbb2;
+  --sl-color-gray-1: #a89984;
+  --sl-color-gray-2: #928374;
+  --sl-color-gray-3: #7c6f64;
+  --sl-color-gray-4: #665c54;
+  --sl-color-gray-5: #504945;
+  --sl-color-gray-6: #3c3836;
+  --sl-color-black: #282828;
+  
+  /* Gruvbox Accents (Green) */
+  --sl-color-accent-low: #32302f;
+  --sl-color-accent: #98971a;
+  --sl-color-accent-high: #b8bb26;
+  
+  /* Backgrounds */
+  --sl-color-bg: #282828;
+  --sl-color-bg-nav: #282828;
+  --sl-color-bg-sidebar: #282828;
+  --sl-color-bg-inline-code: #3c3836;
+  
+  /* Text */
+  --sl-color-text: #ebdbb2;
+  --sl-color-text-accent: #b8bb26;
+
+  /* Asides / Callouts */
+  --sl-color-green-low: #32302f;
+  --sl-color-green: #98971a;
+  --sl-color-green-high: #b8bb26;
+  
+  --sl-color-blue-low: #32302f;
+  --sl-color-blue: #458588;
+  --sl-color-blue-high: #83a598;
+  
+  --sl-color-red-low: #32302f;
+  --sl-color-red: #cc241d;
+  --sl-color-red-high: #fb4934;
+  
+  --sl-color-purple-low: #32302f;
+  --sl-color-purple: #b16286;
+  --sl-color-purple-high: #d3869b;
+  
+  --sl-color-orange-low: #32302f;
+  --sl-color-orange: #d65d0e;
+  --sl-color-orange-high: #fe8019;
+}
+
+:root[data-theme='light'] {
+  /* Gruvbox Light */
+  --sl-color-white: #3c3836;
+  --sl-color-gray-1: #7c6f64;
+  --sl-color-gray-2: #928374;
+  --sl-color-gray-3: #a89984;
+  --sl-color-gray-4: #bdae93;
+  --sl-color-gray-5: #d5c4a1;
+  --sl-color-gray-6: #ebdbb2;
+  --sl-color-black: #fbf1c7;
+  
+  /* Gruvbox Light Accents (Green) */
+  --sl-color-accent-low: #f2e5bc;
+  --sl-color-accent: #98971a;
+  --sl-color-accent-high: #79740e;
+  
+  /* Backgrounds */
+  --sl-color-bg: #fbf1c7;
+  --sl-color-bg-nav: #fbf1c7;
+  --sl-color-bg-sidebar: #fbf1c7;
+  --sl-color-bg-inline-code: #ebdbb2;
+  
+  /* Text */
+  --sl-color-text: #3c3836;
+  --sl-color-text-accent: #79740e;
+
+  /* Asides / Callouts */
+  --sl-color-green-low: #f2e5bc;
+  --sl-color-green: #98971a;
+  --sl-color-green-high: #79740e;
+  
+  --sl-color-blue-low: #f2e5bc;
+  --sl-color-blue: #458588;
+  --sl-color-blue-high: #076678;
+  
+  --sl-color-red-low: #f2e5bc;
+  --sl-color-red: #cc241d;
+  --sl-color-red-high: #9d0006;
+  
+  --sl-color-purple-low: #f2e5bc;
+  --sl-color-purple: #b16286;
+  --sl-color-purple-high: #8f3f71;
+  
+  --sl-color-orange-low: #f2e5bc;
+  --sl-color-orange: #d65d0e;
+  --sl-color-orange-high: #af3a03;
+}
+
+/* Global Typography/UI tweaks for the theme */
+:root {
+  --sl-font-system: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --sl-font-mono: 'Fira Code', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Site Title Font Override */
+.site-title {
+  font-family: 'Pixelify Sans', sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  font-size: 1.5rem !important;
+}

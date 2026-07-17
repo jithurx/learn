@@ -1,0 +1,122 @@
+---
+import { Icon } from '@astrojs/starlight/components';
+
+const { dir, pagination, id } = Astro.locals.starlightRoute;
+const { prev, next } = pagination;
+const isRtl = dir === 'rtl';
+
+// Helper to extract the base post directory (e.g. 'git-and-beyond')
+function getBaseFromId(routeId: string | undefined) {
+  if (!routeId) return null;
+  const segments = routeId.split('/').filter(Boolean);
+  if (segments[0] === 'posts') return segments[1];
+  return null;
+}
+
+// Helper to extract the base post directory from a URL href
+function getBaseFromHref(href: string | undefined) {
+  if (!href) return null;
+  const segments = href.split('/').filter(Boolean);
+  if (segments[0] === 'posts') return segments[1];
+  return null;
+}
+
+const currentBase = getBaseFromId(id);
+const isNextNewPost = next && getBaseFromHref(next.href) !== currentBase;
+const isPrevNewPost = prev && getBaseFromHref(prev.href) !== currentBase;
+---
+<div class="pagination-links print:hidden" dir={dir}>
+	{
+		prev && (
+			<a href={prev.href} rel="prev" class={isPrevNewPost ? 'cross-post' : ''}>
+				<Icon name={isRtl ? 'right-arrow' : 'left-arrow'} size="1.5rem" />
+				<span>
+					{Astro.locals.t('page.previousLink')}
+					<br />
+					<span class="link-title">{prev.label}</span>
+          {isPrevNewPost && <span class="new-post-badge">Previous Post</span>}
+				</span>
+			</a>
+		)
+	}
+	{
+		next && (
+			<a href={next.href} rel="next" class={isNextNewPost ? 'cross-post' : ''}>
+				<Icon name={isRtl ? 'left-arrow' : 'right-arrow'} size="1.5rem" />
+				<span>
+					{Astro.locals.t('page.nextLink')}
+					<br />
+					<span class="link-title">{next.label}</span>
+          {isNextNewPost && <span class="new-post-badge">Next Post</span>}
+				</span>
+			</a>
+		)
+	}
+</div>
+
+<style>
+	@layer starlight.core {
+		.pagination-links {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+			gap: 1rem;
+		}
+
+		a {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+			gap: 0.5rem;
+			width: 100%;
+			flex-basis: calc(50% - 0.5rem);
+			flex-grow: 1;
+			border: 1px solid var(--sl-color-gray-5);
+			border-radius: 0.5rem;
+			padding: 1rem;
+			text-decoration: none;
+			color: var(--sl-color-gray-2);
+			box-shadow: var(--sl-shadow-md);
+			overflow-wrap: anywhere;
+		}
+		[rel='next'] {
+			justify-content: end;
+			text-align: end;
+			flex-direction: row-reverse;
+		}
+		a:hover {
+			border-color: var(--sl-color-gray-2);
+		}
+    
+    a.cross-post {
+      border-color: var(--sl-color-accent);
+      background-color: var(--sl-color-gray-6);
+    }
+    a.cross-post:hover {
+      background-color: var(--sl-color-gray-5);
+    }
+
+		.link-title {
+			color: var(--sl-color-white);
+			font-size: var(--sl-text-2xl);
+			line-height: var(--sl-line-height-headings);
+      display: block;
+      margin-bottom: 0.25rem;
+		}
+    
+    .new-post-badge {
+      display: inline-block;
+      background-color: var(--sl-color-accent-low);
+      color: var(--sl-color-accent-high);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.6rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+		svg {
+			flex-shrink: 0;
+		}
+	}
+</style>

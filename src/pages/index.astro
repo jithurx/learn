@@ -1,17 +1,213 @@
 ---
+import { getCollection } from 'astro:content';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
 
+// Fetch all post index pages from the docs collection
+const docs = await getCollection('docs', (entry) => entry.id.startsWith('posts/') && entry.data.number !== undefined);
+const sorted = docs.sort((a, b) => (b.data.number || 0) - (a.data.number || 0));
+
+const latest = sorted[0];
+const older = sorted.slice(1);
+
+const frontmatter = {
+  title: 'Posts Directory',
+  tableOfContents: false,
+  template: 'splash'
+};
 ---
+<StarlightPage frontmatter={frontmatter}>
+  <p>Welcome! Select a post below to enter its wiki.</p>
+  <div class="homepage-container">
+    {latest && (
+      <section class="hero-section">
+        <div class="hero-content">
+          <span class="badge">LATEST POST</span>
+          <h2>{latest.data.title}</h2>
+          <p>{latest.data.description}</p>
+          <a href={`/${latest.slug || latest.id.replace(/\/index\.mdx?$/, '').replace(/\.mdx?$/, '')}`} class="btn primary-btn">Enter Post</a>
+        </div>
+        {latest.data.coverImage && (
+          <div class="hero-image">
+            <img src={latest.data.coverImage} alt={latest.data.title} />
+          </div>
+        )}
+      </section>
+    )}
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+    {older.length > 0 && (
+      <section class="grid-section">
+        <h3>Previous Posts</h3>
+        <div class="post-grid">
+          {older.map((post) => {
+            const slug = post.slug || post.id.replace(/\/index\.mdx?$/, '').replace(/\.mdx?$/, '');
+            return (
+              <a href={`/${slug}`} class="post-card">
+                {post.data.coverImage && (
+                  <div class="card-image">
+                    <img src={post.data.coverImage} alt={post.data.title} />
+                  </div>
+                )}
+                <div class="card-content">
+                  <span class="badge">#{post.data.number}</span>
+                  <h4>{post.data.title}</h4>
+                  <p>{post.data.description || 'View post materials and exercises.'}</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </section>
+    )}
+  </div>
+</StarlightPage>
+
+<style>
+  .homepage-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 0;
+  }
+  
+  .badge {
+    background-color: var(--sl-color-accent-low);
+    color: var(--sl-color-accent-high);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-block;
+    margin-bottom: 1rem;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    background-color: var(--sl-color-gray-6);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 16px;
+    padding: 3rem;
+    margin-bottom: 4rem;
+  }
+  
+  .hero-content h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+    color: var(--sl-color-white);
+  }
+  
+  .hero-content p {
+    font-size: 1.1rem;
+    color: var(--sl-color-gray-2);
+    margin-bottom: 2rem;
+  }
+  
+  .hero-image {
+    width: 100%;
+    height: 300px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  
+  .primary-btn {
+    background-color: var(--sl-color-accent);
+    color: var(--sl-color-black);
+  }
+  
+  .primary-btn:hover {
+    background-color: var(--sl-color-accent-high);
+  }
+
+  /* Grid Section */
+  .grid-section h3 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: var(--sl-color-white);
+  }
+
+  .post-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--sl-color-gray-6);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--sl-color-gray-4);
+  }
+
+  .card-image {
+    height: 180px;
+    width: 100%;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .card-content .badge {
+    align-self: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .card-content h4 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--sl-color-white);
+  }
+
+  .card-content p {
+    color: var(--sl-color-gray-2);
+    font-size: 0.95rem;
+    margin-top: 0;
+  }
+
+  @media (max-width: 768px) {
+    .hero-section {
+      grid-template-columns: 1fr;
+      padding: 2rem;
+    }
+  }
+</style>
