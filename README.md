@@ -2,7 +2,7 @@
 
 My personal learning and documentation platform. It is built with [Astro Starlight](https://starlight.astro.build/).
 
-## 🚀 Project Structure
+## Project Structure
 
 ```text
 /
@@ -20,7 +20,7 @@ My personal learning and documentation platform. It is built with [Astro Starlig
 └── astro.config.mjs            # Starlight and Astro configuration
 ```
 
-## 📝 Managing Content
+## Managing Content
 
 This repository includes a built-in Local CMS Dashboard for easily managing your wiki posts. 
 
@@ -38,7 +38,7 @@ This will launch a web interface where you can:
 
 *Note: If newly created content does not appear immediately on the local server, run `npx astro dev stop` followed by `npx astro dev --background` to restart the file watcher.*
 
-## 🧞 Commands
+## Commands
 
 All commands are run from the root of the project, from a terminal:
 
@@ -50,7 +50,7 @@ All commands are run from the root of the project, from a terminal:
 | `npx astro dev stop`      | Stops the background dev server                  |
 | `npm run build`           | Build your production site to `./dist/`          |
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - [Astro](https://astro.build)
 - [Starlight](https://starlight.astro.build)
