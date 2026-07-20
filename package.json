@@ -15,6 +15,7 @@
   "dependencies": {
     "@astrojs/starlight": "^0.41.3",
     "astro": "^7.1.0",
+    "astro-mermaid": "^2.1.0",
     "post": "^0.0.1"
   }
 }

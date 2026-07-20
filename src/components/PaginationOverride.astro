@@ -27,27 +27,25 @@ const isPrevNewPost = prev && getBaseFromHref(prev.href) !== currentBase;
 ---
 <div class="pagination-links print:hidden" dir={dir}>
 	{
-		prev && (
-			<a href={prev.href} rel="prev" class={isPrevNewPost ? 'cross-post' : ''}>
+		prev && !isPrevNewPost && (
+			<a href={prev.href} rel="prev">
 				<Icon name={isRtl ? 'right-arrow' : 'left-arrow'} size="1.5rem" />
 				<span>
 					{Astro.locals.t('page.previousLink')}
 					<br />
 					<span class="link-title">{prev.label}</span>
-          {isPrevNewPost && <span class="new-post-badge">Previous Post</span>}
 				</span>
 			</a>
 		)
 	}
 	{
-		next && (
-			<a href={next.href} rel="next" class={isNextNewPost ? 'cross-post' : ''}>
+		next && !isNextNewPost && (
+			<a href={next.href} rel="next">
 				<Icon name={isRtl ? 'left-arrow' : 'right-arrow'} size="1.5rem" />
 				<span>
 					{Astro.locals.t('page.nextLink')}
 					<br />
 					<span class="link-title">{next.label}</span>
-          {isNextNewPost && <span class="new-post-badge">Next Post</span>}
 				</span>
 			</a>
 		)
@@ -86,14 +84,6 @@ const isPrevNewPost = prev && getBaseFromHref(prev.href) !== currentBase;
 		a:hover {
 			border-color: var(--sl-color-gray-2);
 		}
-    
-    a.cross-post {
-      border-color: var(--sl-color-accent);
-      background-color: var(--sl-color-gray-6);
-    }
-    a.cross-post:hover {
-      background-color: var(--sl-color-gray-5);
-    }
 
 		.link-title {
 			color: var(--sl-color-white);
@@ -102,18 +92,6 @@ const isPrevNewPost = prev && getBaseFromHref(prev.href) !== currentBase;
       display: block;
       margin-bottom: 0.25rem;
 		}
-    
-    .new-post-badge {
-      display: inline-block;
-      background-color: var(--sl-color-accent-low);
-      color: var(--sl-color-accent-high);
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 0.15rem 0.6rem;
-      border-radius: 9999px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
 
 		svg {
 			flex-shrink: 0;
