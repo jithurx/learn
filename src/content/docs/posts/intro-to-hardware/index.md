@@ -2,243 +2,235 @@
 number: 2
 title: "Intro To Hardware"
 date: 2026-07-20
-description: "A beginner-friendly, step-by-step session covering electronics basics, Arduino programming, digital output, digital input, and PWM - with diagrams, simulators, and reference links."
+description: "A comprehensive introduction to Arduino programming, digital I/O, and Pulse Width Modulation (PWM)."
 coverImage: "/images/intro-to-hardware-cover.jpg"
 ---
 
-## Overview
+## 1. Introduction
 
-Welcome to **Intro To Hardware**! 🎉
+This module focuses on the fundamentals of Arduino microcontroller programming, digital Input/Output (I/O), and Pulse Width Modulation (PWM). By the culmination of this session, students will utilize these concepts to construct functional circuits, including a sequence-timed traffic light.
 
-Today you'll go from "what's a breadboard?" to building a working traffic light - no prior electronics experience needed. We'll cover the fundamentals of circuits, Arduino programming, digital output, digital input, and Pulse Width Modulation (PWM), one small step at a time.
+[Download the Introduction to Hardware Presentation (PDF)](/files/intro2hardware.pdf)
 
-[Download the Intro to Hardware Presentation (PDF)](/files/intro2hardware.pdf)
+**Target Audience:** This guide assumes foundational knowledge of basic electronics, circuitry, and breadboarding. While these prerequisites are already understood by the audience, introductory electrical theory and breadboard schematics are included throughout this document as supplementary reference material.
 
-> 🙋 **New to all this?** That's exactly who this guide is for. Every new term is explained the first time it shows up, every circuit has a diagram, and every task has a stretch goal if you finish early.
-
-### What You'll Need
+### Required Components
 
 | Item | Quantity | Notes |
 |---|---|---|
-| Arduino Uno (or compatible) | 1 | Any Uno-compatible board works |
-| USB cable | 1 | To connect board to computer |
-| Breadboard | 1 | Half-size or full-size |
-| LEDs (red, yellow, green) | 1 each | Any standard 5mm LEDs |
-| 220 Ω resistors | 3 | Color bands: red-red-brown-gold |
-| Pushbutton | 1 | Standard 4-leg tactile button |
-| Jumper wires | ~10 | Male-to-male |
-| Arduino IDE | - | [Download here](https://www.arduino.cc/en/software) |
+| Arduino Uno (or compatible) | 1 | Microcontroller board |
+| USB cable | 1 | Communication interface |
+| Breadboard | 1 | Half-size or full-size prototype board |
+| LEDs (red, yellow, green) | 1 each | Standard 5mm Light Emitting Diodes |
+| 220 Ω resistors | 3 | Color code: red-red-brown-gold |
+| Pushbutton | 1 | Standard tactile switch |
+| Jumper wires | ~10 | Male-to-male connection wires |
+| Arduino IDE | - | [Download link](https://www.arduino.cc/en/software) |
 
-> 💡 **No hardware yet?** No problem - see [Section 6: Simulate Without Hardware](#6-simulate-without-hardware) to build and test every circuit in this guide right in your browser.
+**Note on Simulation:** For students without physical hardware, refer to [Section 8: Simulation Tools](#8-simulation-tools) to model and execute all circuits virtually.
 
-### Table of Contents
-1. [Anatomy of a Sketch](#1-anatomy-of-a-sketch)
-2. [Digital Output](#2-digital-output)
-3. [Digital Input](#3-digital-input)
-4. [PWM (Pulse Width Modulation)](#4-pwm-pulse-width-modulation)
-5. [Mini Challenge Projects](#5-mini-challenge-projects)
-6. [Simulate Without Hardware](#6-simulate-without-hardware)
-7. [Reference & Further Reading](#7-reference--further-reading)
-8. [Troubleshooting Cheat Sheet](#8-troubleshooting-cheat-sheet)
+### Contents
+1. [Theoretical Foundations](#1-theoretical-foundations)
+2. [Anatomy of an Arduino Program](#2-anatomy-of-an-arduino-program)
+3. [Digital Output](#3-digital-output)
+4. [Sequential Timing Systems](#4-sequential-timing-systems-traffic-light)
+5. [Digital Input](#5-digital-input)
+6. [Pulse Width Modulation (PWM)](#6-pulse-width-modulation-pwm)
+7. [Extended Implementation Projects](#7-extended-implementation-projects)
+8. [Simulation Tools](#8-simulation-tools)
+9. [Reference Material](#9-reference-material)
+10. [Hardware Diagnostic Matrix](#10-hardware-diagnostic-matrix)
 
 ---
 
-## 0. Quick Theory Primer
+## 1. Theoretical Foundations (Reference)
 
-Before we touch code, let's get three words straight - you'll see them all day.
+The following fundamental electrical properties and calculations are provided as a quick reference.
 
-| Term | What it means | Unit |
+| Term | Definition | Standard Unit |
 |---|---|---|
-| **Voltage (V)** | Electrical "pressure" pushing current through a circuit | Volts (V) |
-| **Current (I)** | The actual flow of electric charge | Amps (A) |
-| **Resistance (R)** | How much a component resists that flow | Ohms (Ω) |
+| **Voltage (V)** | The electrical potential difference driving charge through a circuit. | Volts (V) |
+| **Current (I)** | The rate of flow of electric charge. | Amperes (A) |
+| **Resistance (R)** | The opposition to current flow within a conductor or component. | Ohms (Ω) |
 
-**The water pipe analogy:** think of voltage as water pressure, current as how much water is flowing, and resistance as how narrow the pipe is. Squeeze the pipe (add resistance) and less water flows for the same pressure.
+**Fluid Analogy:** Voltage is analogous to water pressure, current to the volumetric flow rate, and resistance to the constriction of a pipe. Increased resistance proportionally reduces current for a constant voltage.
 
-These three are tied together by **Ohm's Law**:
+The relationship between these properties is defined by **Ohm's Law**:
 
 ```
 V = I × R
 ```
 
-**Why does this matter for an LED?** An LED has almost no internal resistance. Connect it straight to 5V and it'll try to pull way more current than it can survive - and burn out instantly. A resistor in series limits the current to a safe level.
+**Application to LEDs:** A Light Emitting Diode (LED) possesses minimal internal resistance. If connected directly to a 5V source, it will draw excessive current and undergo thermal failure. A resistor placed in series limits the current to operational parameters.
 
-Quick math for our red LED: it needs about 2V across it and should run at around 15–20 mA (0.015–0.020 A) of current.
+**Calculating Current-Limiting Resistor Values:**
+A standard red LED typically requires a forward voltage of ~2V and operates efficiently at 15-20 mA (0.015-0.020 A).
 
 ```
-R = (Supply Voltage − LED Voltage) / Current
-R = (5V − 2V) / 0.015A
-R ≈ 200 Ω  →  we round up to the nearest standard value: 220 Ω
+R = (Supply Voltage - LED Forward Voltage) / Desired Current
+R = (5V - 2V) / 0.015A
+R ≈ 200 Ω  (Standard commercially available value: 220 Ω)
 ```
-
-That's the whole reason every LED circuit in this guide has a 220 Ω resistor next to it.
+Consequently, all LED circuits in this module incorporate a 220 Ω series resistor.
 
 ---
 
-## 1. Anatomy of a Sketch
+## 2. Anatomy of an Arduino Program
 
-An Arduino program is called a **sketch**. The Arduino IDE requires two primary functions in every sketch:
+An Arduino program, conventionally referred to as a **sketch**, mandates the implementation of two primary structural functions:
 
 ```cpp
-// runs once on power on or reset
+// Executes once upon initialization or reset
 void setup() {
-  // put your setup code here:
+  // Initialization parameters
 }
 
-// runs forever in a continuous loop
+// Executes continuously following setup completion
 void loop() {
-  // put your main code here:
+  // Primary operational logic
 }
 ```
 
-Here's what actually happens when your board powers on:
+**Execution Flow Diagram:**
 
 ```mermaid
 flowchart TD
-    A["Power On / Reset"] --> B["setup&#40;&#41; runs - ONCE"]
-    B --> C["loop&#40;&#41; begins"]
-    C --> D["Code inside loop&#40;&#41; runs top to bottom"]
+    A["Power Initialization / Hardware Reset"] --> B["setup&#40;&#41; Execution - Singular"]
+    B --> C["loop&#40;&#41; Initiation"]
+    C --> D["Sequential Execution of loop&#40;&#41; Instructions"]
     D --> C
 ```
 
-`setup()` is where you configure things (like telling a pin it's an output). `loop()` is where the ongoing behavior lives - it repeats forever, as fast as the board can run it, until you unplug it.
+The `setup()` function is utilized for hardware configuration, such as defining pin modes. The `loop()` function contains the primary execution logic, which iterates indefinitely at the microcontroller's clock speed.
 
 ---
 
-## 2. Digital Output
+## 3. Digital Output
 
-### What is Digital Output?
-A digital pin acts as a switch controlled by code. It has only two states:
-- **HIGH (5V)**
-- **LOW (0V)**
+### Principles of Digital Output
+A digital output pin functions as a programmable switch, constrained to two discrete binary states:
+- **HIGH (5V logic level)**
+- **LOW (0V logic level)**
 
-Digital pins can be used to control:
-- LEDs
-- Relays
-- Buzzers
-- Motors (via a motor driver)
+Digital pins actuate external components such as LEDs, relays, buzzers, and motor drivers.
 
-### Breadboard Basics
-
-A breadboard lets you build circuits without soldering. The key thing to know: holes are connected in short vertical columns (the "terminal strips"), and the two outer rows on each side are connected horizontally (the "power rails").
+### Prototyping Board (Breadboard) Architecture
+A breadboard facilitates solderless circuit prototyping. Internal conductive clips connect the insertion points (holes) in specific patterns.
 
 ```mermaid
 flowchart LR
-    subgraph Power_Rails ["Power Rails (Connected Horizontally)"]
+    subgraph Power_Rails ["Power Distribution Rails (Horizontal Connectivity)"]
         direction LR
         P1["+"] --- P2["+"] --- P3["+"]
         N1["-"] --- N2["-"] --- N3["-"]
     end
 
-    subgraph Terminal_Strips ["Terminal Strips (Connected Vertically in Rows)"]
+    subgraph Terminal_Strips ["Terminal Strips (Vertical Row Connectivity)"]
         direction LR
-        Left["Row 1: a-b-c-d-e"] --- Gap{Gap} --- Right["Row 1: f-g-h-i-j"]
-        Left2["Row 2: a-b-c-d-e"] --- Gap2{Gap} --- Right2["Row 2: f-g-h-i-j"]
+        Left["Row 1: a-b-c-d-e"] --- Gap{Isolation Trench} --- Right["Row 1: f-g-h-i-j"]
+        Left2["Row 2: a-b-c-d-e"] --- Gap2{Isolation Trench} --- Right2["Row 2: f-g-h-i-j"]
     end
 ```
 
-> 💡 **Tip:** Plug a component's legs into two *different* columns to connect them through the board - plugging both legs into the *same* column just shorts them together.
+**Implementation Note:** Component leads must bridge separate rows to establish a circuit. Inserting both leads into the same row will create a short circuit.
 
-### Wiring an LED
-When wiring an LED, **don't forget the resistor!** LEDs have very low internal resistance. We use a **220 Ω resistor** to limit the current to a safe level (~15–20 mA), as calculated above.
+### LED Circuit Implementation
+When interfacing an LED, a current-limiting resistor is strictly required.
 
 ```mermaid
 flowchart LR
-    A["Arduino Pin 8"] -->|Signal| R["220 Ω Resistor"]
-    R -->|Current| L_Anode("LED Anode (+)<br/>long leg")
-    L_Anode --> L_Cathode("LED Cathode (-)<br/>short flat leg")
-    L_Cathode --> GND["GND"]
+    A["Arduino Digital Pin 8"] -->|Control Signal| R["220 Ω Resistor"]
+    R -->|Limited Current| L_Anode("LED Anode (+)<br/>Extended lead")
+    L_Anode --> L_Cathode("LED Cathode (-)<br/>Truncated lead")
+    L_Cathode --> GND["System Ground (GND)"]
 ```
 
-*Diagram Tip: Connect the long leg (anode) of the LED to a digital pin through the resistor, and the short leg (cathode) to GND (ground). LEDs only work one way - if it doesn't light up, try flipping it around.*
+*Note: LEDs exhibit polarity. The anode must connect toward the positive potential (signal pin), and the cathode toward ground. Incorrect orientation prevents conduction.*
 
-### Core Functions
+### Standard Library Functions
 
 #### `pinMode()`
-Tells the Arduino how a specific pin should behave. This must be set inside the `setup()` function.
+Configures the specified pin to behave either as an input or an output. This declaration occurs within the `setup()` block.
 ```cpp
-pinMode(8, OUTPUT); // Tells the Arduino: "this pin will send signals out"
+pinMode(8, OUTPUT); // Configures Pin 8 for signal transmission
 ```
 📚 [Reference: pinMode()](https://docs.arduino.cc/language-reference/en/functions/digital-io/pinMode/)
 
 #### `digitalWrite()`
-Sets a digital pin's voltage to HIGH (5V) or LOW (0V).
+Assigns a HIGH or LOW state to a digital pin.
 ```cpp
-digitalWrite(8, HIGH); // turn ON
-digitalWrite(8, LOW);  // turn OFF
+digitalWrite(8, HIGH); // Engages 5V potential
+digitalWrite(8, LOW);  // Dissipates to 0V
 ```
 📚 [Reference: digitalWrite()](https://docs.arduino.cc/language-reference/en/functions/digital-io/digitalWrite/)
 
 #### `delay()`
-Pauses the program for a given time in milliseconds. Note that nothing else happens on the board while `delay()` is running.
+Suspends processor execution for a specified duration, defined in milliseconds. No subsequent instructions execute during this period.
 ```cpp
-delay(1000); // pause for 1000 milliseconds = 1 second
+delay(1000); // Suspends execution for 1000 milliseconds (1.0 seconds)
 ```
 📚 [Reference: delay()](https://docs.arduino.cc/language-reference/en/functions/time/delay/)
 
-### Full Blink Code Walkthrough
+### State Oscillation Implementation (Blink)
 ```cpp
-int ledPin = 8; // A variable to store our pin number
+int ledPin = 8; // Variable declaration for pin assignment
 
 void setup() {
   pinMode(ledPin, OUTPUT);
 }
 
 void loop() {
-  digitalWrite(ledPin, HIGH); // Turn LED on
-  delay(1000);                // Wait 1 second
-  digitalWrite(ledPin, LOW);  // Turn LED off
-  delay(1000);                // Wait 1 second
+  digitalWrite(ledPin, HIGH); // Illuminate LED
+  delay(1000);                // Maintain state for 1 second
+  digitalWrite(ledPin, LOW);  // Extinguish LED
+  delay(1000);                // Maintain state for 1 second
 }
 ```
 
-### Variables in Arduino
-A variable is a named "box" that stores a value. Using variables instead of raw numbers makes your code easier to read and change.
+### Variable Declaration
+Variables allocate memory for data storage. Utilizing named variables enhances code readability and parameter modification efficiency.
 ```cpp
-int ledPin = 8;         // whole numbers
-bool isOn = true;       // true/false
-long delayTime = 500;   // larger numbers
+int ledPin = 8;         // Integer declaration
+bool isOn = true;       // Boolean declaration
+long delayTime = 500;   // Extended integer declaration
 ```
 
-### Task 1: Build & Upload Blink
-⏱ ~15 minutes
+### Task 1: Blink Implementation
+**Estimated Duration:** ~15 minutes
 
-- [ ] Wire the LED circuit as shown in the diagram above (pin 8 → resistor → LED → GND)
-- [ ] Open the Arduino IDE and paste in the Blink code
-- [ ] Select your board and port under **Tools**
-- [ ] Click **Upload**
-- [ ] Confirm the LED blinks once per second
+- [ ] Construct the LED circuit adhering to the schematic (Pin 8 -> Resistor -> LED -> GND).
+- [ ] Initialize the Arduino IDE and input the provided source code.
+- [ ] Configure the target board and port interface via the **Tools** menu.
+- [ ] Compile and deploy the software via **Upload**.
+- [ ] Verify an oscillation frequency of 0.5 Hz (1 second HIGH, 1 second LOW).
 
-**Stretch Goals:**
-- Make it blink twice as fast.
-- Blink an SOS-like pattern manually (no loop).
+**Advanced Exercises:**
+- Modify the duty cycle to increase the oscillation frequency by a factor of two.
+- Implement an SOS distress pattern sequence manually, omitting iterative loops.
 
 ---
 
-### Traffic Light System
+## 4. Sequential Timing Systems (Traffic Light)
 
-Different ON/OFF durations create different "feels": fast = urgent, slow = calm. Sequencing multiple `digitalWrite` and `delay` pairs creates a pattern. A traffic light is exactly that: a fixed sequence of timed states.
+Varying temporal states establishes functional sequences. A traffic management system relies on sequential `digitalWrite` and `delay` executions to enforce state transitions.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Red
-    Red --> Green: after 3s
-    Green --> Yellow: after 3s
-    Yellow --> Red: after 1s
+    Red --> Green: Transition at t=3s
+    Green --> Yellow: Transition at t=3s
+    Yellow --> Red: Transition at t=1s
 ```
 
-**Circuit Diagram:**
+**Schematic Diagram:**
 ```mermaid
 flowchart LR
-    P8["Pin 8"] --> R1["220Ω Resistor"] --> L1(("Red LED")) --> GND["GND (shared rail)"]
-    P9["Pin 9"] --> R2["220Ω Resistor"] --> L2(("Yellow LED")) --> GND
-    P10["Pin 10"] --> R3["220Ω Resistor"] --> L3(("Green LED")) --> GND
+    P8["Digital Pin 8"] --> R1["220Ω Resistor"] --> L1(("Red LED")) --> GND["Ground Rail"]
+    P9["Digital Pin 9"] --> R2["220Ω Resistor"] --> L2(("Yellow LED")) --> GND
+    P10["Digital Pin 10"] --> R3["220Ω Resistor"] --> L3(("Green LED")) --> GND
 ```
-- Red LED → pin 8 (+ 220Ω resistor) → GND
-- Yellow LED → pin 9 (+ 220Ω resistor) → GND
-- Green LED → pin 10 (+ 220Ω resistor) → GND
 
-**Code Hints:**
+**Implementation Architecture:**
 ```cpp
 int red = 8, yellow = 9, green = 10;
 
@@ -249,14 +241,13 @@ void setup() {
 }
 
 void loop() {
-  // your sequence here:
-  // red on -> wait -> red off, green on -> wait -> ...
+  // Implement state transitions:
+  // Red HIGH -> Delay -> Red LOW -> Green HIGH -> Delay...
 }
 ```
-*Think about what needs to turn OFF before the next color turns ON.*
 
 <details>
-<summary>🔓 Stuck? Click to reveal one working solution</summary>
+<summary>Solution Reference</summary>
 
 ```cpp
 int red = 8, yellow = 9, green = 10;
@@ -281,74 +272,74 @@ void loop() {
   digitalWrite(yellow, LOW);
 }
 ```
-Try to get your own version working before peeking - you'll remember it better!
+Students are encouraged to attempt the implementation independently before reviewing the provided solution.
 </details>
 
-### Task 2 & 3: Build the Traffic Light
-⏱ ~20 minutes
+### Task 2: Traffic Light Implementation
+**Estimated Duration:** ~20 minutes
 
-- [ ] Wire all three LEDs with their own 220Ω resistors
-- [ ] Write the sequence: Red → Green → Yellow → Red…
-- [ ] Suggested timing: Red 3s, Green 3s, Yellow 1s
-- [ ] Upload and confirm the cycle repeats correctly
+- [ ] Integrate three independent LED circuits utilizing 220Ω resistors.
+- [ ] Program the sequence corresponding to standard traffic light transitions.
+- [ ] Implement the timing parameters: Red (3s), Green (3s), Yellow (1s).
+- [ ] Deploy the code and verify continuous cyclic operation.
 
-**Stretch Goals:**
-- Add a "blinking yellow" caution mode before switching to red.
+**Advanced Exercise:**
+- Implement a precautionary "blinking yellow" state preceding the transition to red.
 
-### Quick Check
+### Knowledge Verification
 <details>
-<summary>Why does the LED need a resistor, but a relay or motor driver module usually doesn't?</summary>
+<summary>Why does an LED necessitate a current-limiting resistor, whereas integrated modules (e.g., relays) generally do not?</summary>
 
-An LED is a simple diode with almost no internal resistance, so it can't limit its own current - you must add a resistor, or it draws too much and burns out. Relays and motor driver modules have their own internal current-limiting/protection circuitry built in, so they don't need an external series resistor the way a bare LED does.
+An LED is a standard semiconductor diode lacking significant internal resistance; consequently, it cannot regulate current draw and will experience catastrophic failure if unmitigated. Integrated modules inherently contain onboard protection and current-limiting circuitry, negating the requirement for external series resistors.
 </details>
 
 ---
 
-## 3. Digital Input
+## 5. Digital Input
 
-### What is Digital Input?
-Instead of sending a signal, the Arduino now reads one. A digital input pin reports `HIGH` or `LOW` based on an external signal, like a button press. Real-world examples include door sensors, keypad buttons, and limit switches.
+### Principles of Digital Input
+In input mode, the microcontroller analyzes external signal logic levels. A digital input pin registers a boolean state (`HIGH` or `LOW`) based on applied voltage. Applications include tactile switches, proximity sensors, and digital interfaces.
 
-### Push Button Circuit
+### Switch Circuit Implementation
 ```mermaid
 flowchart LR
-    PULLUP["Internal Pull-up Resistor<br>(connects to 5V)"] -.- Node(("Junction"))
-    P2["Pin 2"] --- Node
-    Node --- B["Push Button"]
+    PULLUP["Internal Pull-up Resistor<br>(Tied to 5V)"] -.- Node(("Junction"))
+    P2["Digital Pin 2"] --- Node
+    Node --- B["Momentary Switch"]
     B --- GND["GND"]
 ```
-- Button across two breadboard rows.
-- One leg → Arduino digital pin (e.g. pin 2).
-- Other leg → GND.
-- **No external resistor needed** because we use the internal pull-up!
+- The switch bridges across the isolation trench of the breadboard.
+- One terminal connects to the target digital pin.
+- The opposing terminal connects to systemic ground (GND).
+- **Note:** An external pull-up resistor is omitted in favor of the microcontroller's internal hardware.
 
-### The Internal Pull-Up Resistor
-**Problem:** an unconnected ("floating") input pin reads random noise - it isn't reliably HIGH or LOW, it just picks up whatever electrical interference is nearby.
+### Internal Pull-Up Resistors
+**Issue:** An unconnected ("floating") input terminal is highly susceptible to electromagnetic interference, resulting in stochastic state fluctuations rather than a defined boolean value.
 
-**Solution:** `INPUT_PULLUP` connects an internal resistor to 5V by default, so the pin has a stable, known value when the button isn't pressed.
+**Resolution:** The `INPUT_PULLUP` parameter engages an internal resistor linked to the 5V rail, ensuring the pin defaults to a stable logic HIGH state.
 
-**Result:** `HIGH` when not pressed, `LOW` when pressed - **inverted logic!**
+**Logic Inversion:** Consequently, the unactuated state reads `HIGH`, while actuation forces a connection to ground, reading `LOW`.
 ```cpp
 pinMode(2, INPUT_PULLUP);
 ```
 
 ```mermaid
 flowchart LR
-    A["Button NOT pressed"] --> B["Pin reads HIGH"]
-    C["Button pressed"] --> D["Pin reads LOW"]
+    A["Switch Unactuated"] --> B["Logic Level: HIGH"]
+    C["Switch Actuated"] --> D["Logic Level: LOW"]
 ```
 
 ### Function: `digitalRead()`
-Reads the current `HIGH` or `LOW` value of a digital pin. Store the result in a variable to use in an `if` statement.
+Evaluates and returns the instantaneous logic state of a specified pin.
 ```cpp
 int state = digitalRead(2);
 if (state == LOW) {
-  // button is being pressed
+  // Actuation detected
 }
 ```
 📚 [Reference: digitalRead()](https://docs.arduino.cc/language-reference/en/functions/digital-io/digitalRead/)
 
-### Button-Controlled LED - Full Code
+### Integrated Input/Output Implementation
 ```cpp
 int buttonPin = 2;
 int ledPin = 8;
@@ -361,59 +352,59 @@ void setup() {
 void loop() {
   int state = digitalRead(buttonPin);
   if (state == LOW) {
-    digitalWrite(ledPin, HIGH); // Button pressed, LED ON
+    digitalWrite(ledPin, HIGH); // Switch actuated; engage LED
   } else {
-    digitalWrite(ledPin, LOW);  // Button released, LED OFF
+    digitalWrite(ledPin, LOW);  // Switch unactuated; disengage LED
   }
 }
 ```
 
-### Task 4: Build the Button-Controlled LED
-⏱ ~15 minutes
+### Task 3: Switch-Actuated Output
+**Estimated Duration:** ~15 minutes
 
-- [ ] Wire the button to pin 2 and GND (no resistor needed)
-- [ ] Wire the LED to pin 8 as before
-- [ ] Upload the code above
-- [ ] Confirm the LED lights only while the button is held down
+- [ ] Construct the switch circuit on digital pin 2 connecting to ground.
+- [ ] Retain the LED circuit on digital pin 8.
+- [ ] Compile and deploy the integrated I/O code.
+- [ ] Verify that LED illumination corresponds strictly to switch actuation.
 
-**Stretch Goal:**
-- Make the button toggle the LED - stays on after release, turns off on next press. *(Hint: you'll need a variable that remembers the LED's state between loops, and logic that only reacts to a fresh press, not a held-down button.)*
+**Advanced Exercise:**
+- Modify the logic to implement a state toggle (i.e., sequential presses alternate the LED state between ON and OFF). *Hint: Requires state retention variables and edge-detection logic to prevent continuous toggling during prolonged actuation.*
 
-### Quick Check
+### Knowledge Verification
 <details>
-<summary>If you forget INPUT_PULLUP and leave the pin floating, what would you expect to see?</summary>
+<summary>What systemic behavior is expected if the INPUT_PULLUP parameter is omitted and the pin remains floating?</summary>
 
-The LED would flicker or behave erratically even when nobody touches the button - the pin has no defined HIGH or LOW state, so it picks up random electrical noise and digitalRead() returns unpredictable values.
+The LED will exhibit high-frequency oscillation and erratic behavior. The floating pin lacks a reference voltage and will interpret ambient electromagnetic noise as rapid alternations between HIGH and LOW logic states.
 </details>
 
 ---
 
-## 4. PWM (Pulse Width Modulation)
+## 6. Pulse Width Modulation (PWM)
 
-### What is PWM?
-Digital pins can only be fully ON or fully OFF, but switching ON/OFF very fast can simulate "in-between" brightness. The ratio of ON-time to OFF-time is called the **duty cycle**.
+### Principles of PWM
+Standard digital pins provide discrete binary output. Pulse Width Modulation (PWM) simulates analog variance by rapidly oscillating the binary state. The **duty cycle** represents the percentage of time the signal remains in the HIGH state within a given period.
 
 ```mermaid
 flowchart LR
-    subgraph D25 [25% Duty Cycle - Dim]
+    subgraph D25 [25% Duty Cycle - Low Intensity]
         direction LR
-        D25_1[ON] -.-> D25_2[OFF] -.-> D25_3[OFF] -.-> D25_4[OFF]
+        D25_1[HIGH] -.-> D25_2[LOW] -.-> D25_3[LOW] -.-> D25_4[LOW]
         style D25_1 fill:#ff9999,stroke:#333,stroke-width:2px
         style D25_2 fill:#eee,stroke:#333
         style D25_3 fill:#eee,stroke:#333
         style D25_4 fill:#eee,stroke:#333
     end
-    subgraph D50 [50% Duty Cycle - Medium]
+    subgraph D50 [50% Duty Cycle - Medium Intensity]
         direction LR
-        D50_1[ON] -.-> D50_2[ON] -.-> D50_3[OFF] -.-> D50_4[OFF]
+        D50_1[HIGH] -.-> D50_2[HIGH] -.-> D50_3[LOW] -.-> D50_4[LOW]
         style D50_1 fill:#ff6666,stroke:#333,stroke-width:2px
         style D50_2 fill:#ff6666,stroke:#333,stroke-width:2px
         style D50_3 fill:#eee,stroke:#333
         style D50_4 fill:#eee,stroke:#333
     end
-    subgraph D75 [75% Duty Cycle - Bright]
+    subgraph D75 [75% Duty Cycle - High Intensity]
         direction LR
-        D75_1[ON] -.-> D75_2[ON] -.-> D75_3[ON] -.-> D75_4[OFF]
+        D75_1[HIGH] -.-> D75_2[HIGH] -.-> D75_3[HIGH] -.-> D75_4[LOW]
         style D75_1 fill:#ff0000,stroke:#333,stroke-width:2px
         style D75_2 fill:#ff0000,stroke:#333,stroke-width:2px
         style D75_3 fill:#ff0000,stroke:#333,stroke-width:2px
@@ -421,26 +412,21 @@ flowchart LR
     end
 ```
 
-The switching happens hundreds of times per second - far too fast for your eye to see the flicker, so it just looks like a steady brightness in between fully on and fully off.
+This oscillation occurs at a frequency exceeding human visual perception (~490 Hz or 980 Hz), resulting in the optical illusion of variable luminance.
 
-**PWM vs. True Analog Output:**
-- True analog is a continuously variable voltage (Arduino Uno cannot output this directly on digital pins).
-- PWM is still just HIGH/LOW, but rapidly switched to appear variable.
-- Uno PWM pins are marked with a `~` symbol (e.g., pins 3, 5, 6, 9, 10, 11).
+**PWM Characteristics:**
+- Represents an average voltage rather than a true continuous analog waveform.
+- Arduino Uno supports hardware PWM exclusively on pins denoted by the `~` prefix (Pins 3, 5, 6, 9, 10, 11).
 
 ### Function: `analogWrite()`
-Must be used on a `~` PWM pin.
+Modulates the duty cycle of a specified PWM-capable pin.
 ```cpp
-analogWrite(9, 128); // value from 0 (off) to 255 (full brightness)
+analogWrite(9, 128); // Value range: 0 (0% duty cycle) to 255 (100% duty cycle)
 ```
-- `0` = always off
-- `255` = always on
-- `128` ≈ 50% brightness
-
 📚 [Reference: analogWrite()](https://docs.arduino.cc/language-reference/en/functions/analog-io/analogWrite/)
 
-### Fade LED - Circuit & Code
-Use the same circuit as the single Blink LED, but connect it to a `~` pin (e.g. pin 9).
+### Variable Intensity Implementation
+Utilize the standard LED circuit interfaced with a PWM-compatible pin (e.g., Pin 9).
 
 ```cpp
 int brightness = 0;
@@ -457,69 +443,44 @@ void loop() {
     brightness = 0;
   }
   
-  delay(30); // 30 millisecond pause 
+  delay(30); // 30-millisecond execution suspension
 }
 ```
 
-### Task 5: Build the Fade LED
-⏱ ~15 minutes
+### Task 4: PWM Implementation
+**Estimated Duration:** ~15 minutes
 
-- [ ] Move the LED circuit to a `~` PWM pin (e.g. pin 9)
-- [ ] Upload the fade code
-- [ ] Confirm the LED smoothly ramps up, then snaps back to 0 and repeats
+- [ ] Reallocate the LED control circuit to a PWM-capable pin.
+- [ ] Compile and deploy the variable intensity program.
+- [ ] Verify a linear increase in luminosity followed by a discrete reset to zero.
 
-**Stretch Goal:**
-- Make it fade up and down smoothly, with no snap reset (needs a direction flag).
+**Advanced Exercise:**
+- Modify the logic to implement a bidirectional, continuous fade algorithm (triangular waveform) utilizing a directional state variable.
 
-### Quick Check
+### Knowledge Verification
 <details>
-<summary>Why does the fade code snap back to 0 instead of fading down again?</summary>
+<summary>Why does the provided algorithm exhibit a discontinuous reset rather than a gradual decline in intensity?</summary>
 
-`brightness` only ever increases by 5 each loop, and the `if` statement just resets it to 0 once it passes 255 - there's no logic that ever decreases it. To fade back down smoothly, you'd need a variable (a "direction flag") that flips between adding and subtracting once brightness hits either end (0 or 255).
+The variable `brightness` is strictly incremented. The conditional boundary check `if (brightness > 255)` reinitializes the variable to zero instantaneously. A continuous fade requires a state flag to dictate whether the loop should execute an increment or decrement operation based on the boundary conditions.
 </details>
 
 ---
 
-## 5. Mini Challenge Projects
+## 7. Extended Implementation Projects
 
-Pick one of the following to build with your group!
+Select one of the following architectural exercises for further application of the core concepts.
 
-### Option 1: Night Lamp
-- Reuse the Fade LED circuit and code.
-- Add a button to turn the "lamp" on/off entirely.
-- Slower fade-in speed feels more "lamp-like" when the button is pushed.
+### System 1: Interactive Illumination (Night Lamp)
+- Integrate the PWM fade algorithm with digital input control.
+- Actuation of the switch initiates system operation.
+- Implement an extended fade coefficient for gradual illumination.
 
-### Option 2: Blink Patterns
-- Use multiple `digitalWrite` + `delay` calls in sequence to design a pattern.
-- Ideas: heartbeat (short-short-pause), emergency flash, countdown blink.
+### System 2: Programmatic Signaling (Morse Code)
+- Design sequential logic utilizing defined temporal delays to transmit characters.
+- Short duration (dot): ~200 ms; Long duration (dash): ~600 ms.
+- Encode a specific string value (e.g., "HI").
 
-### Option 3: Reaction Timer
-Introduces `random()` and optionally `millis()` for timing. Needs `Serial.begin()` / `Serial.println()` to show the result.
-
-```mermaid
-flowchart TD
-    A["Wait a random delay"] --> B["Turn LED on"]
-    B --> C["Start measuring time"]
-    C --> D["Wait for button press"]
-    D --> E["Measure elapsed time"]
-    E --> F["Print result to Serial Monitor"]
-```
-
-```cpp
-// Rough logic outline:
-// 1. Wait a random delay (delay + random())
-// 2. Turn LED on
-// 3. Start measuring time
-// 4. Wait for button press
-// 5. Measure elapsed time -> print to Serial Monitor
-```
-
-### Option 4: Morse Code LED
-- Dot = short blink (~200 ms), Dash = long blink (~600 ms).
-- Gap between symbols, longer gap between letters.
-- Encode a short word - your name, or "HI".
-
-**Morse Code Reference (A–Z):**
+**Standard Morse Code Mapping:**
 
 | A | .- | J | .--- | S | ... |
 |---|---|---|---|---|---|
@@ -532,57 +493,69 @@ flowchart TD
 | H | .... | Q | --.- | Z | --.. |
 | I | .. | R | .-. | | |
 
-Example: "HI" = `....` `..` (dot-dot-dot-dot, gap, dot-dot)
+*Example output for "HI": `....` `..` (four short pulses, interval, two short pulses)*
+
+### System 3: Chronometric Evaluation (Reaction Timer)
+Requires initialization of the Serial protocol (`Serial.begin()`) to output diagnostic data.
+
+```mermaid
+flowchart TD
+    A["Generate stochastic delay parameter"] --> B["Engage visual stimulus (LED HIGH)"]
+    B --> C["Initiate chronometer"]
+    C --> D["Monitor for interrupt (Switch Actuation)"]
+    D --> E["Calculate temporal delta"]
+    E --> F["Transmit data via Serial interface"]
+```
 
 ---
 
-## 6. Simulate Without Hardware
+## 8. Simulation Tools
 
-Don't have the parts yet, or want to test your code before wiring anything? These tools let you build and run every circuit in this guide right in your browser.
+For development and verification without physical hardware, the following browser-based environments provide accurate hardware modeling and execution capability.
 
-| Tool | Best for | Link |
+| Platform | Core Utility | Documentation URI |
 |---|---|---|
-| **Tinkercad Circuits** | Beginners - drag-and-drop parts, built-in Arduino code editor, great for Blink/Traffic Light/Button tasks | [tinkercad.com/circuits](https://www.tinkercad.com/circuits) |
-| **Wokwi** | Fast, realistic simulation with a proper code editor and serial monitor; easy to share a project link with your group | [wokwi.com](https://wokwi.com/) |
-| **SimulIDE** | An offline desktop simulator if you want realistic simulation without needing a browser/internet | [simulide.com](https://simulide.com/) |
-| **Falstad Circuit Simulator** | Understanding pure electronics concepts (Ohm's Law, resistor behavior) without any microcontroller involved | [falstad.com/circuit](https://www.falstad.com/circuit/) |
+| **Tinkercad Circuits** | Introductory schematic rendering and basic Arduino emulation. | [tinkercad.com/circuits](https://www.tinkercad.com/circuits) |
+| **Wokwi** | High-fidelity hardware emulation, advanced IDE integration, and state-sharing features. | [wokwi.com](https://wokwi.com/) |
+| **SimulIDE** | Desktop-based, offline analog and digital simulation architecture. | [simulide.com](https://simulide.com/) |
+| **Falstad Circuit Simulator** | Pure analog physics emulation (voltage vectors, current flow analysis). | [falstad.com/circuit](https://www.falstad.com/circuit/) |
 
-> 💡 **Suggested workflow:** Build and test your circuit in Tinkercad or Wokwi first. Once it behaves the way you want, wire up the real hardware and upload the same code - you'll spend less time debugging wiring issues on the real board.
-
----
-
-## 7. Reference & Further Reading
-
-- [Arduino Language Reference (all functions)](https://docs.arduino.cc/language-reference/)
-- [pinMode()](https://docs.arduino.cc/language-reference/en/functions/digital-io/pinMode/)
-- [digitalWrite()](https://docs.arduino.cc/language-reference/en/functions/digital-io/digitalWrite/)
-- [digitalRead()](https://docs.arduino.cc/language-reference/en/functions/digital-io/digitalRead/)
-- [analogWrite() / PWM](https://docs.arduino.cc/language-reference/en/functions/analog-io/analogWrite/)
-- [delay()](https://docs.arduino.cc/language-reference/en/functions/time/delay/)
-- [Download the Arduino IDE](https://www.arduino.cc/en/software)
+**Methodological Recommendation:** Prototyping code and schematics within a virtual environment (e.g., Wokwi) prior to physical deployment minimizes syntax and hardware diagnostic overhead.
 
 ---
 
-## 8. Troubleshooting Cheat Sheet
+## 9. Reference Material
 
-| Symptom | Likely Cause |
+- [Core Arduino Language Specification](https://docs.arduino.cc/language-reference/)
+- [Digital I/O: pinMode()](https://docs.arduino.cc/language-reference/en/functions/digital-io/pinMode/)
+- [Digital I/O: digitalWrite()](https://docs.arduino.cc/language-reference/en/functions/digital-io/digitalWrite/)
+- [Digital I/O: digitalRead()](https://docs.arduino.cc/language-reference/en/functions/digital-io/digitalRead/)
+- [Analog I/O: analogWrite()](https://docs.arduino.cc/language-reference/en/functions/analog-io/analogWrite/)
+- [Time: delay()](https://docs.arduino.cc/language-reference/en/functions/time/delay/)
+- [Arduino IDE Repository](https://www.arduino.cc/en/software)
+
+---
+
+## 10. Hardware Diagnostic Matrix
+
+| Observation | Probable Root Cause |
 |---|---|
-| LED doesn't light at all | LED is backwards (flip it), or the circuit isn't complete - check GND is actually connected |
-| LED is always dim / very faint | Wrong pin selected in code vs. wiring, or a loose jumper wire |
-| Upload fails / board not found | Wrong board or port selected under **Tools** in the IDE; try a different USB cable/port |
-| Button always reads pressed (or never does) | Forgot `INPUT_PULLUP`, or the button legs aren't bridging the gap in the breadboard correctly |
-| Traffic light LEDs overlap / stay on together | Missing a `digitalWrite(..., LOW)` before turning the next color on |
-| Fade LED doesn't fade, just blinks | Connected to a non-PWM pin - PWM pins are marked with `~` |
+| LED fails to illuminate | Polarity inversion (anode/cathode reversed) or incomplete ground continuity. |
+| Diminished LED luminosity | Incorrect pin assignment in software versus physical hardware mapping. |
+| IDE compilation/upload failure | Incorrect COM port or board architecture selected in the deployment interface. |
+| Switch registers continuous actuation | Omission of `INPUT_PULLUP` declaration or incorrect physical bridging of breadboard trench. |
+| Sequential states overlap (Traffic Light) | Failure to execute `digitalWrite(LOW)` prior to initiating the subsequent state. |
+| PWM algorithm results in discrete blinking | Component interfaced with a standard digital pin rather than a PWM-enabled port (`~`). |
 
 ---
 
 ## Summary
-Today we covered:
-- **Circuit theory basics:** voltage, current, resistance, Ohm's Law
-- **Digital output:** `pinMode`, `digitalWrite`, `delay`
-- **Digital input:** `digitalRead`, `INPUT_PULLUP`
-- **PWM:** `analogWrite`, duty cycle
-- **Projects Built:** Blink, Traffic Light, Button LED, Fade LED, + a mini project!
-- **Where to practice:** Tinkercad, Wokwi, SimulIDE, and Falstad for simulation
 
-Great work getting through the session - every embedded systems project you'll ever build starts with exactly these building blocks. 🎉
+This module covered the following core concepts:
+- **Electrical Theory:** Voltage, Current, Resistance, and Ohm's Law.
+- **Microcontroller Basics:** `setup()` and `loop()` architectural structure.
+- **Digital Logic (Output):** Actuation utilizing `pinMode` and `digitalWrite`.
+- **Digital Logic (Input):** State detection utilizing `digitalRead` and internal pull-up resistors.
+- **Signal Modulation:** Simulating analog variance via Pulse Width Modulation (PWM).
+
+Mastery of these fundamental principles forms the basis for all advanced embedded systems engineering.
