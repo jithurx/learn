@@ -384,6 +384,11 @@ The LED will exhibit high-frequency oscillation and erratic behavior. The floati
 ### Principles of PWM
 Standard digital pins provide discrete binary output. Pulse Width Modulation (PWM) simulates analog variance by rapidly oscillating the binary state. The **duty cycle** represents the percentage of time the signal remains in the HIGH state within a given period.
 
+<video controls loop muted autoplay style="width: 100%; max-width: 800px; border-radius: 8px; margin: 2rem 0;">
+  <source src="/videos/pwm_explanation.mp4" type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
 ```mermaid
 flowchart LR
     subgraph D25 [25% Duty Cycle - Low Intensity]
