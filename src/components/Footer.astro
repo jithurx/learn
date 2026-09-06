@@ -1,0 +1,75 @@
+<footer class="site-footer">
+  <div class="footer-content">
+    <div class="footer-author">
+      <img
+        src="https://github.com/jithurx.png?size=96"
+        alt="Jithu's GitHub profile"
+        width="40"
+        height="40"
+        loading="lazy"
+      />
+      <p>
+        Made by <a href="https://github.com/jithurx" rel="me noopener" target="_blank">Abhijith R</a>
+      </p>
+    </div>
+
+    <a class="source-link" href="https://github.com/jithurx/learn" rel="noopener" target="_blank">
+      View source on GitHub
+    </a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--sl-color-gray-5);
+    margin-top: 4rem;
+    padding: 1.5rem var(--sl-content-pad-x) 2rem;
+  }
+
+  .footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: var(--sl-content-width);
+    margin: 0 auto;
+    color: var(--sl-color-gray-2);
+    font-size: 0.875rem;
+  }
+
+  .footer-author {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .footer-author img {
+    flex: 0 0 auto;
+    border: 1px solid var(--sl-color-gray-4);
+    border-radius: 50%;
+  }
+
+  .footer-author p {
+    margin: 0;
+  }
+
+  a {
+    color: var(--sl-color-text-accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .source-link {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 30rem) {
+    .footer-content {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

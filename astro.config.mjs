@@ -22,6 +22,7 @@ export default defineConfig({
         PageTitle: './src/components/PageTitleOverride.astro',
         Sidebar: './src/components/SidebarOverride.astro',
         Pagination: './src/components/PaginationOverride.astro',
+        Footer: './src/components/Footer.astro',
       },
       sidebar: [
         {
