@@ -129,3 +129,36 @@ img.fuzzy.loaded {
     transform: none;
   }
 }
+
+/* Pixel-block autumn leaves falling in site header only.
+   Canvas spills downwards past the header so leaves aren't cut off. */
+header.header {
+  position: relative;
+  overflow: visible;
+}
+
+.pixel-leaves-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 0;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  opacity: 0.9;
+  /* Clean cut at the bottom edge (just below the Posts line) */
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 18px), transparent 100%);
+  mask-image: linear-gradient(to bottom, black calc(100% - 18px), transparent 100%);
+}
+
+header.header > *:not(canvas) {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pixel-leaves-canvas {
+    display: none;
+  }
+}
