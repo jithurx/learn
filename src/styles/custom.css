@@ -109,3 +109,23 @@
   letter-spacing: 1px !important;
   font-size: 1.5rem !important;
 }
+
+/* Fuzzy (blur-up) image loading: images start blurred over a shimmer
+   placeholder and sharpen once the full file has loaded. */
+img.fuzzy {
+  filter: blur(18px);
+  transform: scale(1.03);
+  transition: filter 0.6s ease, transform 0.6s ease;
+  background-color: var(--sl-color-gray-6);
+}
+img.fuzzy.loaded {
+  filter: blur(0);
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  img.fuzzy {
+    transition: none;
+    filter: none;
+    transform: none;
+  }
+}

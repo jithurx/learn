@@ -1,29 +1,16 @@
 ---
 import { Icon } from '@astrojs/starlight/components';
+import { getPostSlugFromHref, getPostSlugFromId } from '../lib/posts';
 
 const { dir, pagination, id } = Astro.locals.starlightRoute;
 const { prev, next } = pagination;
 const isRtl = dir === 'rtl';
 
-// Helper to extract the base post directory (e.g. 'git-and-beyond')
-function getBaseFromId(routeId: string | undefined) {
-  if (!routeId) return null;
-  const segments = routeId.split('/').filter(Boolean);
-  if (segments[0] === 'posts') return segments[1];
-  return null;
-}
-
-// Helper to extract the base post directory from a URL href
-function getBaseFromHref(href: string | undefined) {
-  if (!href) return null;
-  const segments = href.split('/').filter(Boolean);
-  if (segments[0] === 'posts') return segments[1];
-  return null;
-}
-
-const currentBase = getBaseFromId(id);
-const isNextNewPost = next && getBaseFromHref(next.href) !== currentBase;
-const isPrevNewPost = prev && getBaseFromHref(prev.href) !== currentBase;
+// Sub-wiki model: never paginate across posts.
+// Only show prev/next when they belong to the same posts/<slug>/ wiki.
+const currentBase = getPostSlugFromId(id);
+const isNextNewPost = next && getPostSlugFromHref(next.href) !== currentBase;
+const isPrevNewPost = prev && getPostSlugFromHref(prev.href) !== currentBase;
 ---
 <div class="pagination-links print:hidden" dir={dir}>
 	{

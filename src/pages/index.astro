@@ -32,7 +32,16 @@ const frontmatter = {
         </div>
         {latest.data.coverImage && (
           <div class="hero-image">
-            <img src={latest.data.coverImage} alt={latest.data.title} />
+            <img
+              src={latest.data.coverImage}
+              alt={latest.data.title}
+              class="fuzzy"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+              onload="this.classList.add('loaded')"
+              onerror="this.classList.add('loaded')"
+            />
           </div>
         )}
       </a>
@@ -48,7 +57,15 @@ const frontmatter = {
               <a href={`/${slug}`} class="post-card">
                 {post.data.coverImage && (
                   <div class="card-image">
-                    <img src={post.data.coverImage} alt={post.data.title} />
+                    <img
+                      src={post.data.coverImage}
+                      alt={post.data.title}
+                      class="fuzzy"
+                      loading="lazy"
+                      decoding="async"
+                      onload="this.classList.add('loaded')"
+                      onerror="this.classList.add('loaded')"
+                    />
                   </div>
                 )}
                 <div class="card-content">

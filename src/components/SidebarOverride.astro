@@ -1,8 +1,10 @@
 ---
 import Default from '@astrojs/starlight/components/Sidebar.astro';
+import { getCollection } from 'astro:content';
+import { getPostSlugFromId } from '../lib/posts';
 
 // Starlight stores the sidebar tree in Astro.locals now, not in Astro.props
-const { sidebar } = Astro.locals.starlightRoute;
+const { sidebar, id } = Astro.locals.starlightRoute;
 
 // Helper to check if a group or its children are currently active
 function isCurrentGroup(entry: any): boolean {
@@ -14,12 +16,68 @@ function isCurrentGroup(entry: any): boolean {
 // Locate the global "Posts" group
 const postsGroup = sidebar.find((s: any) => s.type === 'group' && s.label === 'Posts');
 
+// Sub-wiki model: each folder under posts/<slug>/ is its own mini-wiki.
+// Show only the current post's pages as a flat list (no group dropdown),
+// with a single post heading above it.
+let inSubWiki = false;
+let postTitle: string | null = null;
+const postSlug: string | null = getPostSlugFromId(id);
+
 if (postsGroup && postsGroup.type === 'group') {
   const activePostEntry = postsGroup.entries.find(isCurrentGroup);
   if (activePostEntry) {
+    // Flatten: render the post's pages as top-level links instead of a
+    // collapsible "<slug>" group, so there is no dropdown and no duplicate heading.
+    const postLinks = activePostEntry.type === 'group' ? activePostEntry.entries : [activePostEntry];
     // Override the global sidebar for this route BEFORE rendering the Default sidebar
-    Astro.locals.starlightRoute.sidebar = [activePostEntry];
+    Astro.locals.starlightRoute.sidebar = postLinks;
+    inSubWiki = true;
+  }
+}
+
+// Single post heading: exact frontmatter title of the post landing page.
+if (postSlug) {
+  try {
+    const docs = await getCollection('docs');
+    const indexEntry = docs.find((d: any) => {
+      const nid = String(d.id).replace(/\.mdx?$/, '');
+      return (
+        nid === `posts/${postSlug}/index` ||
+        nid === `posts/${postSlug}` ||
+        d.slug === `posts/${postSlug}` ||
+        d.slug === `posts/${postSlug}/index`
+      );
+    });
+    postTitle = indexEntry?.data?.title ?? postSlug;
+  } catch {
+    postTitle = postSlug;
   }
 }
 ---
+{inSubWiki && postTitle && (
+  <div class="subwiki-header">
+    <a href="/" class="back-link">← All posts</a>
+    <p class="subwiki-title">{postTitle}</p>
+  </div>
+)}
 <Default {...Astro.props} />
+
+<style>
+  .subwiki-header {
+    padding: 0.75rem 1rem 0.25rem;
+  }
+  .back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--sl-color-text-accent);
+  }
+  .back-link:hover {
+    text-decoration: underline;
+  }
+  .subwiki-title {
+    margin: 0.5rem 0 0.25rem;
+    font-weight: 700;
+    color: var(--sl-color-white);
+  }
+</style>
