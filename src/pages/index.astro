@@ -17,34 +17,23 @@ const links = [
     url: "https://github.com/jithurx",
     icon: "ri:github-line",
   },
-  {
-    name: "learn.jithurx.dev",
-    url: "https://learn.jithurx.dev",
-    icon: "ri:global-line",
-  },
 ];
 ---
 
 <BaseLayout
-  title="Abhijith R — Learning Notes & Technical Write-ups"
-  description="Academic-style project pages documenting workshops and course modules on software engineering, embedded systems, and hardware."
+  title="Abhijith R"
+  description="Notes on software and hardware."
   search={false}
 >
   <main style="margin-inline: auto;" class="w-full max-w-6xl px-6">
-    <header class="not-prose mx-auto max-w-3xl pt-16 pb-16 text-center sm:pt-24 sm:pb-20">
-      <p
-        class="mb-5 text-xs font-semibold tracking-[0.25em] text-zinc-500 uppercase dark:text-zinc-400"
-      >
-        Learning Notes &amp; Technical Write-ups
-      </p>
+    <header class="not-prose mx-auto max-w-3xl pt-20 pb-16 text-center sm:pt-28 sm:pb-20">
       <h1 class="m-0 text-5xl font-medium tracking-tight text-zinc-900 sm:text-6xl dark:text-zinc-50">
         Abhijith R
       </h1>
       <p
         class="mx-auto mt-6 mb-0 max-w-2xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-300"
       >
-        A collection of academic-style project pages documenting workshops and course
-        modules on software engineering, embedded systems, and hardware.
+        Notes on software and hardware.
       </p>
 
       <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
@@ -69,19 +58,14 @@ const links = [
       <div
         class="mb-8 flex flex-col justify-between gap-3 border-b border-zinc-200 pb-5 sm:flex-row sm:items-end dark:border-zinc-800"
       >
-        <div>
-          <p class="m-0 text-xs font-semibold tracking-[0.2em] text-zinc-500 uppercase dark:text-zinc-400">
-            Archive
-          </p>
-          <h2
-            id="projects-heading"
-            class="mt-2 mb-0 text-3xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50"
-          >
-            Projects
-          </h2>
-        </div>
+        <h2
+          id="projects-heading"
+          class="m-0 text-3xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50"
+        >
+          Posts
+        </h2>
         <p class="m-0 text-sm text-zinc-500 dark:text-zinc-400">
-          {projects.length} curated {projects.length === 1 ? "entry" : "entries"}
+          {projects.length} {projects.length === 1 ? "post" : "posts"}
         </p>
       </div>
 
@@ -92,24 +76,6 @@ const links = [
           ))
         }
       </div>
-    </section>
-
-    <section
-      class="not-prose mx-auto mt-20 max-w-3xl rounded-2xl border border-zinc-200 bg-zinc-50 p-8 dark:border-zinc-800 dark:bg-zinc-900/60"
-      aria-labelledby="about-heading"
-    >
-      <h2
-        id="about-heading"
-        class="mt-0 mb-3 text-xl font-semibold text-zinc-900 dark:text-zinc-50"
-      >
-        About this collection
-      </h2>
-      <p class="m-0 leading-relaxed text-zinc-600 dark:text-zinc-300">
-        Each entry is written as a self-contained project page: an abstract, a
-        sequence of sections, reference material, and downloadable resources. The
-        notes are maintained as living documents and are updated as the underlying
-        workshops and course modules evolve.
-      </p>
     </section>
   </main>
 
