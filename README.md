@@ -1,56 +1,79 @@
 # learn.jithurx.dev
 
-My personal learning and documentation platform. It is built with [Astro Starlight](https://starlight.astro.build/).
+Academic-style project pages for my learning notes and technical write-ups. The
+site is built with [Astro](https://astro.build/), [Tailwind CSS](https://tailwindcss.com/),
+and [MDX](https://mdxjs.com/), based on
+[Roman Hauksson-Neill's academic project page template](https://github.com/RomanHauksson/academic-project-astro-template).
 
-## Project Structure
+## Structure
 
 ```text
 /
 ├── public/
-│   └── images/                 # Favicons and cover images for posts
+│   ├── files/                  # Downloadable slides, PDFs, and archives
+│   ├── images/                 # Cover images and figures referenced from content
+│   └── videos/                 # Video assets
 ├── src/
-│   ├── components/             # Custom Starlight component overrides
+│   ├── components/             # Academic project page components
 │   ├── content/
-│   │   └── docs/
-│   │       └── posts/          # Markdown content for all wiki posts
+│   │   └── projects/           # One .mdx file per project page
+│   ├── layouts/
+│   │   └── BaseLayout.astro    # Shared document shell, fonts, and prose styles
 │   ├── pages/
-│   │   └── index.astro         # The custom, sidebar-less splash homepage
+│   │   ├── index.astro         # Project archive / landing page
+│   │   └── projects/
+│   │       └── [...slug].astro # Renders a project from the content collection
 │   └── styles/
-│       └── custom.css          # Global Gruvbox theme variables
-└── astro.config.mjs            # Starlight and Astro configuration
+│       └── global.css          # Tailwind theme, typography, and layout tokens
+└── astro.config.ts             # Astro, MDX, Mermaid, and KaTeX configuration
 ```
 
-## Managing Content
+## Adding a project
 
-This repository includes a built-in Local CMS Dashboard for easily managing your wiki posts. 
+Create a new `.mdx` file in `src/content/projects/`. The filename becomes the URL
+slug (`src/content/projects/my-project.mdx` → `/projects/my-project/`).
 
-To add, edit, or delete posts, run the following command in your terminal:
+```mdx
+---
+title: "My Project"
+subtitle: "A one-line subtitle shown under the header"
+description: "Used for the archive card and link previews."
+date: 2026-08-01
+tags: ["Topic", "Workshop"]
+order: 4
+cover: "/images/my-cover.jpg"
+links:
+  - name: "Slides"
+    url: "/files/my-slides.pdf"
+    icon: "ri:slideshow-2-line"
+---
+
+import HighlightedSection from "@/components/HighlightedSection.astro";
+
+<HighlightedSection>
+
+## Abstract
+
+A short summary of the project.
+
+</HighlightedSection>
+
+## First Section
+
+Body content in Markdown, MDX, LaTeX, or Mermaid.
+```
+
+Projects are ordered by the `order` field. A project page automatically gets a
+cover header, author line, tags, link buttons, and a footer.
+
+## Development
 
 ```bash
-npm run manage-posts
+npm install
+npm run dev
+npm run build
+npm run preview
 ```
 
-This will launch a web interface where you can:
-- **Create Posts**: Generate new posts and upload cover images.
-- **Upload Attachments**: Attach downloadable files (PDFs, Docs, etc.) to your posts which are automatically saved to `public/files/` and linked via markdown.
-- **Edit Posts**: Instantly open a live Markdown editor for any existing post.
-- **Delete Posts**: Cleanly wipe a post along with its images and attachments.
-
-*Note: If newly created content does not appear immediately on the local server, run `npx astro dev stop` followed by `npx astro dev --background` to restart the file watcher.*
-
-## Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run manage-posts`    | Opens the Local CMS Dashboard to manage posts    |
-| `npx astro dev --background` | Starts local dev server in the background   |
-| `npx astro dev stop`      | Stops the background dev server                  |
-| `npm run build`           | Build your production site to `./dist/`          |
-
-## Tech Stack
-
-- [Astro](https://astro.build)
-- [Starlight](https://starlight.astro.build)
+`npm run build` runs `astro check` before building. To verify the production
+output locally, run `npm run build && npm run preview`.

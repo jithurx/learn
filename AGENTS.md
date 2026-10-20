@@ -1,22 +1,27 @@
+# Project instructions
+
 ## Development
 
-When starting the dev server, use background mode:
+Start the dev server in background mode:
 
-```
+```bash
 astro dev --background
 ```
 
-Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
+Manage it with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
-## Documentation
+## Content model
 
-Full documentation: https://docs.astro.build
+- Project pages live in `src/content/projects/*.mdx` and are rendered by
+  `src/pages/projects/[...slug].astro`.
+- The archive at `src/pages/index.astro` lists every project, ordered by the
+  `order` frontmatter field.
+- Shared visual components (Header, Figure, HighlightedSection, Table, Wide,
+  etc.) live in `src/components/`.
+- Cover images and downloadable files are served from `public/images/` and
+  `public/files/` respectively.
 
-Consult these guides before working on related tasks:
+## Checks
 
-- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
-- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
-- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
-- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
-- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
-- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
+Run `npm run build` before finishing a change; it type-checks the project and
+verifies that every MDX page compiles.

@@ -1,0 +1,67 @@
+---
+title: "Git & Beyond"
+subtitle: "Navigating Open-Source Repositories and Contributing Through Pull Requests"
+description: "A workshop on the open-source contribution workflow: finding repositories, selecting issues, preparing branches, and submitting pull requests."
+date: "2026-06-15"
+tags:
+  - "Git"
+  - "Open Source"
+  - "Workshop"
+order: 1
+cover: "/images/git_cover.png"
+links:
+  - name: "Slides"
+    url: "/files/git-and-beyond/slides.pdf"
+    icon: "ri:slideshow-2-line"
+  - name: "Practice Repo"
+    url: "https://github.com/jithurx/tasklite"
+    icon: "ri:github-line"
+---
+
+import HighlightedSection from "@/components/HighlightedSection.astro";
+
+<HighlightedSection>
+
+## Abstract
+
+Resources for the session '**Git & Beyond**'. This workshop maps the standard open-source contribution workflow — finding a suitable repository, isolating an issue, preparing a branch, and submitting a pull request for review.
+
+</HighlightedSection>
+
+## Downloads
+
+- [Session Slides (PDF)](/files/git-and-beyond/slides.pdf)
+
+## Practice Repo
+
+[github.com/jithurx/tasklite](https://github.com/jithurx/tasklite)
+
+A small to-do list app with six open issues for practice. Labels used: `good first issue`, `help wanted`, `documentation`, `bug`, `enhancement`.
+
+```bash
+git clone https://github.com/<your-username>/tasklite.git
+cd tasklite
+git checkout -b fix-<short-description>
+git add .
+git commit -m "Fix: <short description>"
+git push origin fix-<short-description>
+```
+Then open a pull request on GitHub.
+
+## Find More Issues
+
+- [goodfirstissue.dev](https://goodfirstissue.dev)
+- [up-for-grabs.net](https://up-for-grabs.net)
+- [codetriage.com](https://codetriage.com)
+- [first-contributions](https://github.com/firstcontributions/first-contributions)
+- [freeCodeCamp](https://github.com/freeCodeCamp/freeCodeCamp)
+
+## Challenge
+
+Open one pull request, anywhere, by next week.
+
+[Submit your Pull Request](https://tally.so/r/5BDqNM)
+
+## Questions
+
+Open a [Discussion](https://github.com/jithurx/tasklite/discussions) on the `tasklite` repo.

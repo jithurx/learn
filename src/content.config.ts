@@ -1,23 +1,28 @@
-import { defineCollection } from 'astro:content';
-import { docsLoader } from '@astrojs/starlight/loaders';
-import { docsSchema } from '@astrojs/starlight/schema';
-import { z } from 'astro:content';
+import { defineCollection } from "astro:content";
+import { glob } from "astro/loaders";
+import { z } from "astro/zod";
 
-const docs = defineCollection({
-  loader: docsLoader(),
-  schema: docsSchema({
-    extend: z.object({
-      number: z.number().optional(),
-      date: z.date().optional(),
-      tags: z.array(z.string()).default([]),
-      repo: z.string().url().optional(),
-      recording: z.string().url().optional(),
-      slides: z.string().optional(),
-      pptx: z.string().optional(),
-      codeZip: z.string().optional(),
-      coverImage: z.string().optional(),
-    }),
+const links = z.array(
+  z.object({
+    name: z.string(),
+    url: z.string(),
+    icon: z.string().optional(),
+  }),
+);
+
+const projects = defineCollection({
+  loader: glob({ pattern: "**/*.mdx", base: "./src/content/projects" }),
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string().optional(),
+    description: z.string(),
+    date: z.coerce.date(),
+    tags: z.array(z.string()).default([]),
+    order: z.number().default(0),
+    cover: z.string().optional(),
+    coverAlt: z.string().optional(),
+    links: links.default([]),
   }),
 });
 
-export const collections = { docs };
+export const collections = { projects };
