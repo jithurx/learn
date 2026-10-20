@@ -15,6 +15,11 @@ import astroExpressiveCode from "astro-expressive-code";
 // https://astro.build/config
 export default defineConfig({
   site: "https://learn.jithurx.dev",
+  redirects: {
+    "/git-and-beyond/": "/projects/git-and-beyond/",
+    "/intro-to-hardware/": "/projects/intro-to-hardware/",
+    "/intro-to-hardware-day-2/": "/projects/intro-to-hardware-day-2/",
+  },
   vite: {
     plugins: [tailwindcss()],
   },

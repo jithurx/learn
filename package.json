@@ -29,6 +29,7 @@
     "astro-expressive-code": "^0.41.3",
     "astro-icon": "^1.1.0",
     "astro-mermaid": "^2.1.0",
+    "github-slugger": "^2.0.0",
     "image-size": "^2.0.2",
     "mermaid": "^11.17.2",
     "pdf-to-img": "^5.0.0",

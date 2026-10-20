@@ -4,10 +4,11 @@ import { Icon } from "astro-icon/components";
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ProjectCard from "../components/ProjectCard.astro";
+import Search from "../components/Search.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 
 const projects = (await getCollection("projects")).sort(
-  (a, b) => a.data.order - b.data.order,
+  (a, b) => a.data.number - b.data.number,
 );
 
 const links = [
@@ -27,6 +28,7 @@ const links = [
 <BaseLayout
   title="Abhijith R — Learning Notes & Technical Write-ups"
   description="Academic-style project pages documenting workshops and course modules on software engineering, embedded systems, and hardware."
+  search={false}
 >
   <main style="margin-inline: auto;" class="w-full max-w-6xl px-6">
     <header class="not-prose mx-auto max-w-3xl pt-16 pb-16 text-center sm:pt-24 sm:pb-20">
@@ -59,6 +61,8 @@ const links = [
           ))
         }
       </div>
+
+      <Search mode="inline" />
     </header>
 
     <section class="not-prose" aria-labelledby="projects-heading">
@@ -83,8 +87,8 @@ const links = [
 
       <div class="grid gap-8 md:grid-cols-2">
         {
-          projects.map((project, index) => (
-            <ProjectCard project={project} index={index + 1} />
+          projects.map((project) => (
+            <ProjectCard project={project} />
           ))
         }
       </div>

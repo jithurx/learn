@@ -1,0 +1,14 @@
+---
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { number: String(project.data.number) },
+    props: { slug: project.id },
+  }));
+}
+
+const { slug } = Astro.props;
+return Astro.redirect(`/projects/${slug}/`, 301);
+---

@@ -12,12 +12,19 @@ pages** rather than a single paper page.
   - `src/content/projects/*.mdx` contains one project per file. The filename is
     the URL slug.
   - Frontmatter keys: `title`, `subtitle`, `description`, `date`, `tags`,
-    `order`, `cover`, `coverAlt`, `links`.
+    `number`, `cover`, `coverAlt`, `links`.
 - Pages
-  - `src/pages/index.astro` is the archive: it sorts projects by `order` and
+  - `src/pages/index.astro` is the archive: it sorts projects by `number` and
     renders `ProjectCard`s.
   - `src/pages/projects/[...slug].astro` renders a single project with `Header`,
     date/tags, and the MDX body via the content collection `render()` API.
+  - `src/pages/[number].astro` redirects `/<number>/` to the project with that
+    number; legacy slugs redirect via `redirects` in `astro.config.ts`.
+- Search
+  - `src/pages/search-index.json.ts` builds a section-level index from project
+    bodies (using `github-slugger` so anchors match Astro's heading IDs).
+  - `src/components/Search.astro` provides the home inline search and the
+    floating dialog on project pages (`/` or `Ctrl/Cmd+K`).
 - Layout and styling
   - `src/layouts/BaseLayout.astro` owns the document shell, fonts, SEO tags, and
     the prose classes.

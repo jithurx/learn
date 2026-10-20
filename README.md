@@ -40,7 +40,7 @@ subtitle: "A one-line subtitle shown under the header"
 description: "Used for the archive card and link previews."
 date: 2026-08-01
 tags: ["Topic", "Workshop"]
-order: 4
+number: 4
 cover: "/images/my-cover.jpg"
 links:
   - name: "Slides"
@@ -63,8 +63,22 @@ A short summary of the project.
 Body content in Markdown, MDX, LaTeX, or Mermaid.
 ```
 
-Projects are ordered by the `order` field. A project page automatically gets a
-cover header, author line, tags, link buttons, and a footer.
+Projects are ordered by `number`. A project page automatically gets a cover
+header, author line, tags, link buttons, and a footer.
+
+### Numbered and legacy URLs
+
+- `/<number>/` redirects to the corresponding project page (for example, `/3/`).
+- The old Starlight slugs (`/git-and-beyond/`, `/intro-to-hardware/`, and
+  `/intro-to-hardware-day-2/`) redirect to their new `/projects/...` pages.
+  Add more entries to `redirects` in `astro.config.ts` when moving content.
+
+## Search
+
+A client-side search bar indexes every project section at build time via
+`src/pages/search-index.json.ts`. The home page has an inline search bar; project
+pages expose a floating search button. Both support `/` and `Ctrl/Cmd+K` as
+keyboard shortcuts, and results deep-link to the relevant section anchor.
 
 ## Development
 

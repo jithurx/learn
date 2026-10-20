@@ -1,0 +1,450 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  mode?: "inline" | "dialog";
+}
+
+const { mode = "dialog" } = Astro.props;
+---
+
+<div data-search-root data-mode={mode} class="not-prose">
+  {
+    mode === "dialog" ? (
+      <>
+        <button
+          type="button"
+          data-search-open
+          aria-label="Search content"
+          class="fixed top-4 right-4 z-50 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white/90 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm backdrop-blur transition hover:border-zinc-300 hover:bg-white dark:border-zinc-700 dark:bg-zinc-900/90 dark:text-zinc-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-900"
+        >
+          <Icon name="ri:search-line" class="h-4 w-4" />
+          <span class="hidden sm:inline">Search</span>
+          <kbd class="hidden rounded border border-zinc-200 px-1.5 py-0.5 text-[0.65rem] font-medium text-zinc-400 sm:inline dark:border-zinc-700 dark:text-zinc-500">
+            /
+          </kbd>
+        </button>
+
+        <dialog
+          data-search-dialog
+          class="m-auto w-[min(46rem,calc(100vw-2rem))] rounded-2xl border border-zinc-200 bg-white p-0 text-zinc-900 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+        >
+          <div class="flex items-center gap-3 border-b border-zinc-200 px-5 py-4 dark:border-zinc-700">
+            <Icon name="ri:search-line" class="h-5 w-5 shrink-0 text-zinc-400" />
+            <input
+              data-search-input
+              type="search"
+              placeholder="Search projects, sections, and code…"
+              aria-label="Search content"
+              autocomplete="off"
+              spellcheck="false"
+              class="w-full border-0 bg-transparent p-0 text-base text-zinc-900 outline-none placeholder:text-zinc-400 focus:ring-0 dark:text-zinc-100"
+            />
+            <button
+              type="button"
+              data-search-close
+              class="rounded border border-zinc-200 px-2 py-1 text-[0.65rem] font-medium text-zinc-500 dark:border-zinc-700 dark:text-zinc-400"
+            >
+              Esc
+            </button>
+          </div>
+          <div data-search-results class="max-h-[60vh] overflow-y-auto p-2"></div>
+          <p
+            data-search-empty
+            class="m-0 px-5 py-6 text-center text-sm text-zinc-500 dark:text-zinc-400"
+            hidden
+          >
+            No matching notes. Try a broader keyword.
+          </p>
+          <p
+            class="m-0 border-t border-zinc-100 px-5 py-3 text-xs text-zinc-400 dark:border-zinc-800 dark:text-zinc-500"
+          >
+            Search titles, section headings, tags, and body text. Press
+            <kbd class="font-sans">Esc</kbd> to close.
+          </p>
+        </dialog>
+      </>
+    ) : (
+      <div class="relative mx-auto mt-9 w-full max-w-xl text-left">
+        <div class="flex items-center gap-3 rounded-full border border-zinc-300 bg-white px-5 py-3 shadow-sm transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100 dark:border-zinc-700 dark:bg-zinc-900 dark:focus-within:border-blue-500 dark:focus-within:ring-blue-950">
+          <Icon name="ri:search-line" class="h-5 w-5 shrink-0 text-zinc-400" />
+          <input
+            data-search-input
+            type="search"
+            placeholder="Search notes, sections, and code…"
+            aria-label="Search content"
+            autocomplete="off"
+            spellcheck="false"
+            class="w-full border-0 bg-transparent p-0 text-base text-zinc-900 outline-none placeholder:text-zinc-400 focus:ring-0 dark:text-zinc-100"
+          />
+          <kbd class="hidden rounded border border-zinc-200 px-1.5 py-0.5 text-[0.65rem] font-medium text-zinc-400 sm:inline dark:border-zinc-700 dark:text-zinc-500">
+            /
+          </kbd>
+        </div>
+
+        <div
+          data-search-panel
+          hidden
+          class="absolute inset-x-0 top-full z-30 mt-2 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900"
+        >
+          <div data-search-results class="max-h-[50vh] overflow-y-auto p-2"></div>
+          <p
+            data-search-empty
+            class="m-0 px-5 py-6 text-center text-sm text-zinc-500 dark:text-zinc-400"
+            hidden
+          >
+            No matching notes. Try a broader keyword.
+          </p>
+          <p
+            class="m-0 border-t border-zinc-100 px-5 py-3 text-xs text-zinc-400 dark:border-zinc-800 dark:text-zinc-500"
+          >
+            Search titles, section headings, tags, and body text.
+          </p>
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  interface SearchSection {
+    id: string;
+    title: string;
+    text: string;
+  }
+
+  interface SearchProject {
+    slug: string;
+    number: number;
+    title: string;
+    description: string;
+    tags: string[];
+    sections: SearchSection[];
+  }
+
+  interface SearchResult {
+    project: SearchProject;
+    section: SearchSection;
+    snippet: string;
+    score: number;
+  }
+
+  const base = import.meta.env.BASE_URL.endsWith("/")
+    ? import.meta.env.BASE_URL
+    : import.meta.env.BASE_URL + "/";
+
+  let indexPromise: Promise<SearchProject[]> | null = null;
+
+  function loadIndex() {
+    if (!indexPromise) {
+      indexPromise = fetch(base + "search-index.json")
+        .then((response) => (response.ok ? response.json() : []))
+        .catch(() => []);
+    }
+    return indexPromise;
+  }
+
+  const normalize = (value: string) => value.toLowerCase().normalize("NFKD");
+
+  const escapeRegExp = (value: string) =>
+    value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  function makeSnippet(text: string, tokens: string[]) {
+    const lower = text.toLowerCase();
+    const positions = tokens
+      .map((token) => lower.indexOf(token))
+      .filter((position) => position >= 0);
+    const index = positions.length ? Math.min(...positions) : 0;
+    const start = Math.max(0, index - 60);
+    const end = Math.min(text.length, index + 180);
+    return `${start > 0 ? "…" : ""}${text.slice(start, end).trim()}${
+      end < text.length ? "…" : ""
+    }`;
+  }
+
+  function search(projects: SearchProject[], query: string): SearchResult[] {
+    const tokens = normalize(query).split(/\s+/).filter(Boolean);
+    if (!tokens.length) return [];
+
+    const results: SearchResult[] = [];
+
+    for (const project of projects) {
+      const title = normalize(project.title);
+      const description = normalize(project.description);
+      const tags = normalize(project.tags.join(" "));
+
+      for (const section of project.sections) {
+        const sectionTitle = normalize(section.title);
+        const text = normalize(section.text);
+        const haystack = `${title} ${description} ${tags} ${sectionTitle} ${text}`;
+
+        if (!tokens.every((token) => haystack.includes(token))) continue;
+
+        let score = 0;
+        for (const token of tokens) {
+          if (title.includes(token)) score += 6;
+          if (sectionTitle.includes(token)) score += 5;
+          if (tags.includes(token)) score += 3;
+          if (description.includes(token)) score += 2;
+          if (text.includes(token)) score += 1;
+        }
+
+        results.push({
+          project,
+          section,
+          snippet: makeSnippet(section.text, tokens),
+          score,
+        });
+      }
+    }
+
+    return results.sort((a, b) => b.score - a.score).slice(0, 8);
+  }
+
+  function appendHighlighted(
+    element: HTMLElement,
+    text: string,
+    tokens: string[],
+  ) {
+    if (!tokens.length) {
+      element.textContent = text;
+      return;
+    }
+
+    const pattern = new RegExp(
+      `(${tokens.map(escapeRegExp).join("|")})`,
+      "gi",
+    );
+    const lookup = new Set(tokens.map((token) => token.toLowerCase()));
+
+    for (const part of text.split(pattern)) {
+      if (!part) continue;
+      if (lookup.has(part.toLowerCase())) {
+        const mark = document.createElement("mark");
+        mark.className =
+          "rounded bg-amber-200/80 px-0.5 text-zinc-900 dark:bg-amber-400/30 dark:text-zinc-50";
+        mark.textContent = part;
+        element.appendChild(mark);
+      } else {
+        element.appendChild(document.createTextNode(part));
+      }
+    }
+  }
+
+  function renderResults(
+    root: HTMLElement,
+    results: SearchResult[],
+    tokens: string[],
+  ) {
+    const resultsElement = root.querySelector<HTMLElement>(
+      "[data-search-results]",
+    );
+    const emptyElement = root.querySelector<HTMLElement>("[data-search-empty]");
+    if (!resultsElement) return;
+
+    resultsElement.replaceChildren();
+
+    if (!results.length) {
+      if (emptyElement) emptyElement.hidden = false;
+      return;
+    }
+
+    if (emptyElement) emptyElement.hidden = true;
+
+    for (const result of results) {
+      const link = document.createElement("a");
+      link.href = `${base}projects/${result.project.slug}/#${result.section.id}`;
+      link.className =
+        "block rounded-xl px-3 py-2.5 transition hover:bg-zinc-100 focus:bg-zinc-100 focus:outline-none dark:hover:bg-zinc-800 dark:focus:bg-zinc-800";
+
+      const meta = document.createElement("div");
+      meta.className =
+        "mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.7rem] font-medium tracking-wide text-zinc-500 uppercase dark:text-zinc-400";
+
+      const badge = document.createElement("span");
+      badge.className =
+        "rounded-full bg-zinc-900 px-2 py-0.5 text-white dark:bg-zinc-100 dark:text-zinc-900";
+      badge.textContent = `Post ${String(result.project.number).padStart(
+        2,
+        "0",
+      )}`;
+      meta.appendChild(badge);
+
+      const projectName = document.createElement("span");
+      projectName.textContent = result.project.title;
+      meta.appendChild(projectName);
+
+      const separator = document.createElement("span");
+      separator.textContent = "›";
+      meta.appendChild(separator);
+
+      const sectionName = document.createElement("span");
+      sectionName.textContent = result.section.title;
+      meta.appendChild(sectionName);
+
+      const snippet = document.createElement("p");
+      snippet.className =
+        "m-0 text-sm leading-relaxed text-zinc-600 dark:text-zinc-300";
+      appendHighlighted(snippet, result.snippet, tokens);
+
+      link.append(meta, snippet);
+      resultsElement.appendChild(link);
+    }
+  }
+
+  function setupSearch(root: HTMLElement) {
+    const input = root.querySelector<HTMLInputElement>("[data-search-input]");
+    const panel = root.querySelector<HTMLElement>("[data-search-panel]");
+    const dialog = root.querySelector<HTMLDialogElement>("[data-search-dialog]");
+    if (!input) return;
+
+    let timer: number | undefined;
+    let requestId = 0;
+
+    const update = async (query: string) => {
+      const id = ++requestId;
+
+      if (!query.trim()) {
+        root.querySelector("[data-search-results]")?.replaceChildren();
+        const empty = root.querySelector<HTMLElement>("[data-search-empty]");
+        if (empty) empty.hidden = true;
+        if (panel) panel.hidden = true;
+        return;
+      }
+
+      const projects = await loadIndex();
+      if (id !== requestId) return;
+
+      const tokens = normalize(query).split(/\s+/).filter(Boolean);
+      renderResults(root, search(projects, query), tokens);
+      if (panel) panel.hidden = false;
+    };
+
+    input.addEventListener("input", () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => update(input.value), 120);
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && panel) {
+        input.value = "";
+        update("");
+        input.blur();
+      }
+      if (event.key === "Enter") {
+        const first = root.querySelector<HTMLAnchorElement>(
+          "[data-search-results] a",
+        );
+        if (first) {
+          event.preventDefault();
+          first.click();
+        }
+      }
+    });
+
+    if (dialog) {
+      const open = (prefill = "") => {
+        if (!dialog.open) dialog.showModal();
+        if (prefill) {
+          input.value = prefill;
+          update(prefill);
+        }
+        requestAnimationFrame(() => input.focus());
+      };
+
+      const close = () => dialog.close();
+
+      root
+        .querySelector("[data-search-open]")
+        ?.addEventListener("click", () => open());
+      root
+        .querySelector("[data-search-close]")
+        ?.addEventListener("click", close);
+
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) close();
+      });
+
+      dialog.addEventListener("close", () => {
+        input.value = "";
+        update("");
+      });
+
+      root.querySelector("[data-search-results]")?.addEventListener(
+        "click",
+        (event) => {
+          if ((event.target as HTMLElement).closest("a")) close();
+        },
+        true,
+      );
+
+      (root as HTMLElement & { openSearch?: (value?: string) => void }).openSearch =
+        open;
+    }
+
+    if (panel) {
+      input.addEventListener("focus", () => {
+        if (input.value.trim()) update(input.value);
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!root.contains(event.target as Node)) panel.hidden = true;
+      });
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-search-root]").forEach(setupSearch);
+
+  document.addEventListener("keydown", (event) => {
+    const target = event.target as HTMLElement | null;
+    const typing =
+      target &&
+      (target.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+
+    const isShortcut =
+      event.key === "/" ||
+      ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k");
+
+    if (typing || !isShortcut) return;
+
+    const dialogRoot = document.querySelector<HTMLElement>(
+      '[data-search-root][data-mode="dialog"]',
+    );
+    const inlineInput = document.querySelector<HTMLInputElement>(
+      '[data-search-root][data-mode="inline"] [data-search-input]',
+    );
+
+    if (dialogRoot) {
+      event.preventDefault();
+      (
+        dialogRoot as HTMLElement & { openSearch?: () => void }
+      ).openSearch?.();
+    } else if (inlineInput) {
+      event.preventDefault();
+      inlineInput.focus();
+    }
+  });
+</script>
+
+<style>
+  dialog[data-search-dialog]::backdrop {
+    background: rgb(9 9 11 / 0.55);
+    backdrop-filter: blur(3px);
+  }
+
+  dialog[data-search-dialog][open] {
+    animation: search-pop 140ms ease-out;
+  }
+
+  @keyframes search-pop {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+</style>
